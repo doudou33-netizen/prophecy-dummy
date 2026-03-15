@@ -1,1 +1,233 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>予言</title>
+  <link rel="apple-touch-icon" href="IMG_8251.png">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, sans-serif;
+      background: #0a0a0a;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #select-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      width: 100vw;
+      gap: 20px;
+    }
+
+    #select-screen h1 {
+      color: #c9a84c;
+      font-size: 28px;
+      letter-spacing: 6px;
+      margin-bottom: 10px;
+    }
+
+    #select-screen p {
+      color: #555;
+      font-size: 13px;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+    }
+
+    .cat-btn {
+      width: 240px;
+      padding: 16px;
+      background: transparent;
+      border: 1px solid #c9a84c;
+      color: #c9a84c;
+      font-size: 16px;
+      letter-spacing: 4px;
+      border-radius: 30px;
+    }
+
+    .cat-btn:active {
+      background: #c9a84c22;
+    }
+
+    #choice-screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      width: 100vw;
+      gap: 16px;
+    }
+
+    #choice-screen h2 {
+      color: #c9a84c;
+      font-size: 18px;
+      letter-spacing: 4px;
+      margin-bottom: 10px;
+    }
+
+    .choice-btn {
+      width: 240px;
+      padding: 16px;
+      background: transparent;
+      border: 1px solid #555;
+      color: #fff;
+      font-size: 20px;
+      letter-spacing: 4px;
+      border-radius: 30px;
+    }
+
+    .choice-btn:active {
+      background: #ffffff11;
+    }
+
+    #result {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      width: 100vw;
+      background: #0a0a0a;
+    }
+
+    .suit {
+      font-size: 180px;
+      line-height: 1;
+      filter: drop-shadow(0 0 30px currentColor);
+      animation: reveal 0.8s ease-out;
+    }
+
+    .suit.red    { color: #c0392b; }
+    .suit.black  { color: #ecf0f1; }
+    .suit.blue   { color: #2980b9; }
+    .suit.green  { color: #27ae60; }
+    .suit.yellow { color: #f1c40f; }
+
+    .suit-name {
+      font-size: 22px;
+      letter-spacing: 8px;
+      margin-top: 20px;
+      animation: reveal 0.8s ease-out;
+    }
+
+    .suit-name.red    { color: #c0392b; }
+    .suit-name.black  { color: #ecf0f1; }
+    .suit-name.blue   { color: #2980b9; }
+    .suit-name.green  { color: #27ae60; }
+    .suit-name.yellow { color: #f1c40f; }
+
+    .gold-line {
+      width: 120px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, #c9a84c, transparent);
+      margin: 24px auto;
+      animation: reveal 1s ease-out;
+    }
+
+    @keyframes reveal {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- カテゴリ選択画面 -->
+  <div id="select-screen">
+    <h1>予　言</h1>
+    <p>カテゴリを選んでください</p>
+    <button class="cat-btn" onclick="selectCategory('mark')">♦ マーク</button>
+    <button class="cat-btn" onclick="selectCategory('number')">１ 数字</button>
+    <button class="cat-btn" onclick="selectCategory('color')">● 色</button>
+    <button class="cat-btn" onclick="selectCategory('izakaya')">🍺 居酒屋</button>
+  </div>
+
+  <!-- 4択選択画面 -->
+  <div id="choice-screen">
+    <h2>選んでください</h2>
+    <button class="choice-btn" id="btn0" onclick="showResult(0)"></button>
+    <button class="choice-btn" id="btn1" onclick="showResult(1)"></button>
+    <button class="choice-btn" id="btn2" onclick="showResult(2)"></button>
+    <button class="choice-btn" id="btn3" onclick="showResult(3)"></button>
+  </div>
+
+  <!-- 結果画面 -->
+  <div id="result">
+    <div class="gold-line"></div>
+    <div class="suit" id="suitSymbol"></div>
+    <div class="suit-name" id="suitName"></div>
+    <div class="gold-line"></div>
+  </div>
+
+  <script>
+    const categories = {
+      mark: [
+        { symbol: '♦', name: 'ダイヤ',   color: 'red',   label: '♦ ダイヤ'   },
+        { symbol: '♣', name: 'クラブ',   color: 'black', label: '♣ クラブ'   },
+        { symbol: '♥', name: 'ハート',   color: 'red',   label: '♥ ハート'   },
+        { symbol: '♠', name: 'スペード', color: 'black', label: '♠ スペード' },
+      ],
+      number: [
+        { symbol: '１', name: '', color: 'black', label: '１' },
+        { symbol: '２', name: '', color: 'black', label: '２' },
+        { symbol: '３', name: '', color: 'black', label: '３' },
+        { symbol: '４', name: '', color: 'black', label: '４' },
+      ],
+      color: [
+        { symbol: '●', name: '赤', color: 'red',    label: '● 赤' },
+        { symbol: '●', name: '青', color: 'blue',   label: '● 青' },
+        { symbol: '●', name: '緑', color: 'green',  label: '● 緑' },
+        { symbol: '●', name: '黄', color: 'yellow', label: '● 黄' },
+      ],
+      izakaya: [
+        { symbol: '🍽', name: '皿',       color: 'black', label: '🍽 皿'       },
+        { symbol: '🍺', name: 'コップ',   color: 'black', label: '🍺 コップ'   },
+        { symbol: '🥢', name: '箸',       color: 'black', label: '🥢 箸'       },
+        { symbol: '🧻', name: 'おしぼり', color: 'black', label: '🧻 おしぼり' },
+      ],
+    };
+
+    let phase = 'select';
+    let currentCategory = null;
+
+    function selectCategory(cat) {
+      if (phase !== 'select') return;
+      currentCategory = cat;
+      phase = 'choice';
+
+      // ボタンのラベルを設定
+      const items = categories[cat];
+      for (let i = 0; i < 4; i++) {
+        document.getElementById('btn' + i).textContent = items[i].label;
+      }
+
+      document.getElementById('select-screen').style.display = 'none';
+      document.getElementById('choice-screen').style.display = 'flex';
+    }
+
+    function showResult(index) {
+      if (phase !== 'choice') return;
+      phase = 'result';
+
+      const suit = categories[currentCategory][index];
+      document.getElementById('suitSymbol').textContent = suit.symbol;
+      document.getElementById('suitSymbol').className = 'suit ' + suit.color;
+      document.getElementById('suitName').textContent = suit.name;
+      document.getElementById('suitName').className = 'suit-name ' + suit.color;
+
+      document.getElementById('choice-screen').style.display = 'none';
+      document.getElementById('result').style.display = 'flex';
+    }
+  </script>
+</body>
+</html>
 
